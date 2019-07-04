@@ -1,0 +1,82 @@
+service: sra-backend
+tenant: serverlessdev
+app: sra-backend
+plugins:
+  - '@serverless/enterprise-plugin'
+  - serverless-pseudo-parameters
+provider:
+  name: aws
+  runtime: nodejs10.x
+  profile: ${opt:profile, "serverless-tutorial"}  # cat ~/.aws/credentials 
+  region: ${opt:region, "us-east-2"}  # sls deploy --region us-east-2
+  stage: ${opt:stage, "dev"} # sls deploy --stage test || qa, dev, prod
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:DeleteItem
+        - dynamodb:UpdateItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
+functions:
+  getAllUsers:
+    handler: api.handler
+    events:
+      - http:
+          path: users
+          method: GET
+          cors: true
+    environment:
+      TABLE_NAME: ${self:custom.DynamoDBTableName}
+  updateUser:
+    handler: api.handler
+    events:
+      - http:
+          path: users/{id}
+          method: PUT
+          cors: true
+    environment:
+      TABLE_NAME: ${self:custom.DynamoDBTableName}
+  createUser:
+    handler: api.handler
+    events:
+      - http:
+          path: users
+          method: POST
+          cors: true
+    environment:
+      TABLE_NAME: ${self:custom.DynamoDBTableName}
+  deleteUser:
+    handler: api.handler
+    events:
+      - http:
+          path: users/{id}
+          method: DELETE
+          cors: true
+    environment:
+      TABLE_NAME: ${self:custom.DynamoDBTableName}
+  getUser:
+    handler: api.handler
+    events:
+      - http:
+          path: users/{id}
+          method: GET
+          cors: true
+    environment:
+      TABLE_NAME: ${self:custom.DynamoDBTableName}
+custom:
+  DynamoDBTableName: ${self:service}-users-table-${self:provider.stage} # sra-backend-users-table-test
+resources:
+  Resources:
+    myDynamoDBTable: 
+      Type: AWS::DynamoDB::Table
+      Properties: 
+        AttributeDefinitions: 
+          - AttributeName: user_id
+            AttributeType: S
+        KeySchema: 
+          - AttributeName: user_id
+            KeyType: HASH  # RANGE
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:custom.DynamoDBTableName}
