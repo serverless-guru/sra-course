@@ -12,5 +12,8 @@
   "devDependencies": {
     "@serverless/enterprise-plugin": "^1.1.0",
     "serverless-pseudo-parameters": "^2.4.0"
+  },
+  "dependencies": {
+    "uuid": "^3.3.2"
   }
 }

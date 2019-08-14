@@ -1,14 +1,14 @@
 service: sra-backend
-tenant: serverlessdev
-app: sra-backend
+# tenant: serverlessdev
+# app: sra-backend
 plugins:
-  - '@serverless/enterprise-plugin'
+  # - '@serverless/enterprise-plugin'
   - serverless-pseudo-parameters
 provider:
   name: aws
   runtime: nodejs10.x
   profile: ${opt:profile, "serverless-tutorial"}  # cat ~/.aws/credentials 
-  region: ${opt:region, "us-east-2"}  # sls deploy --region us-east-2
+  region: ${opt:region, "us-west-2"}  # sls deploy --region us-east-2
   stage: ${opt:stage, "dev"} # sls deploy --stage test || qa, dev, prod
   iamRoleStatements:
     - Effect: "Allow"

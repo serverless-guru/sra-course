@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk');
+const uuidv4 = require('uuid/v4');
 
 const api = {};
 
@@ -37,6 +38,10 @@ api.handler = async (event) => {
       response.body = JSON.stringify(e);
       response.statusCode = 500;
   }
+  response.headers = {
+    'Access-Control-Allow-Origin': '*', // Required for CORS support to work
+    'Access-Control-Allow-Credentials': true, // Required for cookies, authorization headers with HTTPS
+  };
   console.log('response', response);
   return response;
 };
@@ -62,6 +67,8 @@ api.handleDeleteUserById = (userId) => {
 api.handleCreateUser = (item) => {
     return new Promise((resolve, reject) => {
         let documentClient = new AWS.DynamoDB.DocumentClient();
+
+        item.user_id = uuidv4();
     
         let params = {
           TableName : TABLE_NAME,
