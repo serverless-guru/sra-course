@@ -3,8 +3,8 @@ const uuidv4 = require('uuid/v4');
 
 const api = {};
 
-const TABLE_NAME = process.env.TABLE_NAME;
 const REGION = process.env.REGION;
+const TABLE_NAME = process.env.TABLE_NAME;
 
 api.handler = async (event) => {
   console.log('event', event);
@@ -71,19 +71,21 @@ api.handleCreateUser = (item) => {
 
     item.user_id = uuidv4();
 
-    let s3 = new AWS.S3();
+    let s3 = new AWS.S3({ region: REGION });
 
     if (item.image) {
       // upload image to S3
       let S3_BUCKET = process.env.S3_BUCKET;
-      let ext = item.image.includes('image/png') ? 'png' : 'jpg';
+      let ext = item.image.split(';')[0].split('/')[1];
       let key = `profile/${item.user_id}/profile.${ext}`;
       let S3_URL = `https://${S3_BUCKET}.s3-${REGION}.amazonaws.com/${key}`;
+      let buf = new Buffer.from(item.image.replace(/^data:image\/\w+;base64,/, ""),'base64');
       let params = {
         ACL: "public-read",
-        Body: item.image,
+        Body: buf,
         Bucket: S3_BUCKET,
-        Key: key
+        Key: key,
+        ContentType: `image/${ext}`
       };
       s3.putObject(params, (err, data) => {
         if (err) {
