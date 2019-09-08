@@ -4,13 +4,15 @@
   "description": "",
   "main": "api.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy": "bash ./scripts/deploy.bash",
+    "remove": "bash ./scripts/remove.bash"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@serverless/enterprise-plugin": "^1.1.0",
+    "serverless-plugin-additional-stacks": "^1.2.0",
     "serverless-pseudo-parameters": "^2.4.0"
   },
   "dependencies": {
