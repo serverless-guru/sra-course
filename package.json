@@ -12,6 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@serverless/enterprise-plugin": "^1.1.0",
+    "serverless-iam-roles-per-function": "^2.0.2",
     "serverless-plugin-additional-stacks": "^1.2.0",
     "serverless-pseudo-parameters": "^2.4.0"
   },
