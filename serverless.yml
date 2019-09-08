@@ -4,6 +4,7 @@ service: sra-backend
 plugins:
   # - '@serverless/enterprise-plugin'
   - serverless-pseudo-parameters
+  - serverless-plugin-additional-stacks
 provider:
   name: aws
   runtime: nodejs10.x
@@ -19,6 +20,8 @@ provider:
         - dynamodb:DeleteItem
         - dynamodb:UpdateItem
       Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
+  environment:
+    REGION: ${self:provider.region}
 functions:
   getAllUsers:
     handler: api.handler
@@ -47,6 +50,7 @@ functions:
           cors: true
     environment:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
+      S3_BUCKET: ${self:custom.s3BucketName}
   deleteUser:
     handler: api.handler
     events:
@@ -67,6 +71,15 @@ functions:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
 custom:
   DynamoDBTableName: ${self:service}-users-table-${self:provider.stage} # sra-backend-users-table-test
+  s3BucketName: ${self:service}-profile-images-${self:provider.stage}
+  additionalStacks:
+    s3:
+      Deploy: Before
+      Resources:
+        S3ProfileImages:
+          Type: AWS::S3::Bucket
+          Properties:
+            BucketName: ${self:custom.s3BucketName}
 resources:
   Resources:
     myDynamoDBTable: 
