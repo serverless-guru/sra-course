@@ -67,7 +67,9 @@ api.handleDeleteUserById = (userId) => {
 
 api.handleCreateUser = (item) => {
   return new Promise((resolve, reject) => {
-    let documentClient = new AWS.DynamoDB.DocumentClient();
+    let documentClient = new AWS.DynamoDB.DocumentClient({ region: REGION });
+
+    console.log('item', item);
 
     item.user_id = uuidv4();
 
@@ -87,18 +89,27 @@ api.handleCreateUser = (item) => {
         Key: key,
         ContentType: `image/${ext}`
       };
+      console.log({
+        S3_URL,
+        key,
+        ext,
+        S3_BUCKET
+      });
+      console.log('params', params);
       s3.putObject(params, (err, data) => {
         if (err) {
           reject(err);
         } else {
+          console.log('s3 data', data);
           delete item.ext;
           delete item.image;
           item.image_url = S3_URL;
-          let params = {
+          let ddbParams = {
             TableName: TABLE_NAME,
             Item: item
           };
-          documentClient.put(params, (err, data) => {
+          console.log('ddb params', ddbParams);
+          documentClient.put(ddbParams, (err, data) => {
             if (err) reject(err);
             else resolve(data);
           });

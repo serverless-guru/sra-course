@@ -61,8 +61,8 @@ functions:
         Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
       - Effect: "Allow"
         Action:
-          - s3:PutObject
-        Resource: arn:aws:s3:::${self:custom.s3BucketName}
+          - s3:PutObject*
+        Resource: arn:aws:s3:::${self:custom.s3BucketName}/*
   deleteUser:
     handler: api.handler
     events:
