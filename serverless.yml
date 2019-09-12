@@ -38,12 +38,17 @@ functions:
           cors: true
     environment:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
+      S3_BUCKET: ${self:custom.s3BucketName}
     iamRoleStatements:
       - Effect: "Allow"
         Action:
           - dynamodb:GetItem
           - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
+      - Effect: "Allow"
+        Action:
+          - s3:PutObject*
+        Resource: arn:aws:s3:::${self:custom.s3BucketName}/*
   createUser:
     handler: api.handler
     events:
