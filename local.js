@@ -46,9 +46,8 @@ async function handleReq(req, res) {
     console.log(`response`, response);
 
     const body = JSON.parse(response.body);
-    const status = isNaN(body.status) ? 500 : body.status;
-    res.status(status).send(body); 
+    res.status(response.statusCode).send(body);
   } catch (error) {
-    res.send(error) 
+    res.send(error);
   }
 }
