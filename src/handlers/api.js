@@ -4,6 +4,7 @@ const generic = require('../helper/generic');
 const api = {};
 
 const TABLE_NAME = process.env.TABLE_NAME;
+const REGION = process.env.REGION;
 
 /**
  * Delete user from database by id
