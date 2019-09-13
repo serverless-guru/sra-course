@@ -1,14 +1,14 @@
-const responseLib = {};
+const generic = {};
 
-responseLib.success = body => {
-  return responseLib.buildResponse(200, body);
+generic.success = body => {
+  return generic.buildResponse(200, body);
 };
 
-responseLib.failure = body => {
-  return buildResponse(500, body);
+generic.failure = body => {
+  return generic.buildResponse(500, body);
 };
   
-responseLib.buildResponse = (statusCode, body) => {
+generic.buildResponse = (statusCode, body) => {
   return {
     statusCode: statusCode,
     headers: {
@@ -19,4 +19,23 @@ responseLib.buildResponse = (statusCode, body) => {
   };
 };
 
-module.exports = responseLib;
+generic.buildDDBUpdate = item => {
+  return new Promise((resolve, reject) => {
+    let updateExpression = 'set ';
+    let expressionAttributeNames = {};
+    let expressionAttributeValues = {};
+    Object.keys(item).forEach((key) => {
+      updateExpression += `#${key} = :${key}, `;
+      expressionAttributeNames[`#${key}`] = key;
+      expressionAttributeValues[`:${key}`] = item[key];
+    });
+    updateExpression = updateExpression.substring(0, updateExpression.length - 2);
+    resolve({
+      updateExpression,
+      expressionAttributeNames,
+      expressionAttributeValues
+    });
+  });
+};
+
+module.exports = generic;
