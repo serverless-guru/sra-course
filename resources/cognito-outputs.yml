@@ -1,0 +1,6 @@
+CognitoId:
+  Description: The ID of Cognito User Pool
+  Value:
+    Ref: UserPool
+  Export:
+    Name: ${self:service}:${self:provider.stage}:CognitoId
