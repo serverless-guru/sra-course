@@ -21,32 +21,34 @@ app.delete('/:resource/:id', handleReq);
 
 app.listen(5555, () => console.log('listening on 5555...'));
 
-function handleReq(req, res) {
-  const resource = req.params.resource;
-  const lambda = require(`./api`);
-  const idStr = req.params.id ? `/${req.params.id}` : '';
-  const prop = req.params.prop ? `/${req.params.prop}` : '';
+async function handleReq(req, res) {
+  try {
+    const resource = req.params.resource;
+    const lambda = require(`./src/handlers/api`);
+    const idStr = req.params.id ? `/${req.params.id}` : '';
+    const prop = req.params.prop ? `/${req.params.prop}` : '';
+    const pathParameters = req.params.id ? { id: req.params.id } : {}; 
 
-  const event = {
-    resource: `/${resource}`,
-    path: `/${resource}${idStr}${prop}`,
-    pathParameters: {
-      id: req.params.id
-    },
-    queryStringParameters: req.query,
-    httpMethod: req.method,
-    headers: req.headers,
-    'body': JSON.stringify(req.body),
-  };
+    const event = {
+      resource: `/${resource}`,
+      path: `/${resource}${idStr}${prop}`,
+      pathParameters,
+      queryStringParameters: req.query,
+      httpMethod: req.method,
+      headers: req.headers,
+      'body': JSON.stringify(req.body),
+    };
 
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('content-type', 'application/json');
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('content-type', 'application/json');
 
-  lambda.handler(event)
-    .then(result => {
-      const body = JSON.parse(result.body);
-      const status = isNaN(body.status) ? 500 : body.status;
-      res.status(status).send(body);
-    })
-    .catch(err => res.send(err));
+    let response = await lambda.handler(event);
+    console.log(`response`, response);
+
+    const body = JSON.parse(response.body);
+    const status = isNaN(body.status) ? 500 : body.status;
+    res.status(status).send(body); 
+  } catch (error) {
+    res.send(error) 
+  }
 }
