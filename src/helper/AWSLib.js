@@ -1,4 +1,6 @@
 const AWS = require("aws-sdk");
+const REGION = process.env.REGION;
+AWS.config.update({region: REGION});
 
 const AWSLib = {};
 
