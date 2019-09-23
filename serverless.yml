@@ -12,11 +12,22 @@ provider:
   profile: ${opt:profile, "serverless-tutorial"}  # cat ~/.aws/credentials 
   region: ${opt:region, "us-west-2"}  # sls deploy --region us-east-2
   stage: ${opt:stage, "dev"} # sls deploy --stage test || qa, dev, prod
+  # ** Env vars (global) **
   environment:
     REGION: ${self:provider.region}
+  # ** X-Ray Tracing **
+  tracing:
+    apiGateway: true
+    lambda: true
+  # ** IAM permissions (global) **
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - xray:*
+      Resource: "*"
 functions:
   getAllUsers:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users
@@ -30,7 +41,7 @@ functions:
           - dynamodb:Scan
         Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
   updateUser:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users/{id}
@@ -50,7 +61,7 @@ functions:
           - s3:PutObject*
         Resource: arn:aws:s3:::${self:custom.s3BucketName}/*
   createUser:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users
@@ -69,7 +80,7 @@ functions:
           - s3:PutObject*
         Resource: arn:aws:s3:::${self:custom.s3BucketName}/*
   deleteUser:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users/{id}
@@ -83,7 +94,7 @@ functions:
           - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
   getUser:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users/{id}
@@ -97,6 +108,9 @@ functions:
           - dynamodb:GetItem
         Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
 custom:
+  # ** Add global IAM permissions to all lambdas **
+  serverless-iam-roles-per-function:
+    defaultInherit: true
   DynamoDBTableName: ${self:service}-users-table-${self:provider.stage} # sra-backend-users-table-test
   s3BucketName: ${self:service}-profile-images-${self:provider.stage}
   additionalStacks:
@@ -109,7 +123,7 @@ custom:
       Outputs: ${file(./resources/cognito-outputs.yml)}
 resources:
   Resources:
-    myDynamoDBTable: 
+    myDynamoDBTable:
       Type: AWS::DynamoDB::Table
       Properties: 
         AttributeDefinitions: 
