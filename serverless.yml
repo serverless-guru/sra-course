@@ -16,7 +16,7 @@ provider:
     REGION: ${self:provider.region}
 functions:
   getAllUsers:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users
@@ -30,7 +30,7 @@ functions:
           - dynamodb:Scan
         Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
   updateUser:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users/{id}
@@ -50,7 +50,7 @@ functions:
           - s3:PutObject*
         Resource: arn:aws:s3:::${self:custom.s3BucketName}/*
   createUser:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users
@@ -69,7 +69,7 @@ functions:
           - s3:PutObject*
         Resource: arn:aws:s3:::${self:custom.s3BucketName}/*
   deleteUser:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users/{id}
@@ -83,7 +83,7 @@ functions:
           - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
   getUser:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users/{id}
