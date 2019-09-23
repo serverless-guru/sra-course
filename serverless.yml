@@ -23,7 +23,8 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - xray:*
+        - xray:PutTelemetryRecords
+        - xray:PutTraceSegments
       Resource: "*"
 functions:
   getAllUsers:
