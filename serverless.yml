@@ -22,6 +22,10 @@ functions:
           path: users
           method: GET
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
     environment:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
     iamRoleStatements:
@@ -36,6 +40,10 @@ functions:
           path: users/{id}
           method: PUT
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
     environment:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
       S3_BUCKET: ${self:custom.s3BucketName}
@@ -56,6 +64,10 @@ functions:
           path: users
           method: POST
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
     environment:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
       S3_BUCKET: ${self:custom.s3BucketName}
@@ -75,6 +87,10 @@ functions:
           path: users/{id}
           method: DELETE
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
     environment:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
     iamRoleStatements:
@@ -89,6 +105,10 @@ functions:
           path: users/{id}
           method: GET
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
     environment:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
     iamRoleStatements:

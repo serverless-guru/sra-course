@@ -3,7 +3,7 @@ CognitoId:
   Value:
     Ref: UserPool
   Export:
-    Name: ${self:service}:${self:provider.stage}:CognitoId
+    Name: ${self:service}-cognito:${self:provider.stage}:CognitoId
 CognitoArn:
   Description: The Arn of Cognito User Pool
   Value:
@@ -11,4 +11,4 @@ CognitoArn:
       - UserPool
       - Arn
   Export:
-    Name: ${self:service}:${self:provider.stage}:CognitoArn
+    Name: ${self:service}-cognito:${self:provider.stage}:CognitoArn
