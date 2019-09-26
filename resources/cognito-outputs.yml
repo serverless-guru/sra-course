@@ -4,3 +4,11 @@ CognitoId:
     Ref: UserPool
   Export:
     Name: ${self:service}:${self:provider.stage}:CognitoId
+CognitoArn:
+  Description: The Arn of Cognito User Pool
+  Value:
+    Fn::GetAtt:
+      - UserPool
+      - Arn
+  Export:
+    Name: ${self:service}:${self:provider.stage}:CognitoArn

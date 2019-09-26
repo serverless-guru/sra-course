@@ -109,6 +109,17 @@ custom:
       Outputs: ${file(./resources/cognito-outputs.yml)}
 resources:
   Resources:
+    # API Gateway Cognito Authorizor
+    ApiGatewayAuthorizer: 
+      Type: AWS::ApiGateway::Authorizer
+      Properties: 
+        Name: CognitoUserPool
+        Type: COGNITO_USER_POOLS
+        IdentitySource: method.request.header.Authorization
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ProviderARNs:
+          - Fn::ImportValue: ${self:service}-cognito:${self:provider.stage}:CognitoArn
     myDynamoDBTable: 
       Type: AWS::DynamoDB::Table
       Properties: 
