@@ -34,6 +34,10 @@ functions:
           path: users
           method: GET
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
     environment:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
     iamRoleStatements:
@@ -48,6 +52,10 @@ functions:
           path: users/{id}
           method: PUT
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
     environment:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
       S3_BUCKET: ${self:custom.s3BucketName}
@@ -68,6 +76,10 @@ functions:
           path: users
           method: POST
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
     environment:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
       S3_BUCKET: ${self:custom.s3BucketName}
@@ -87,6 +99,10 @@ functions:
           path: users/{id}
           method: DELETE
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
     environment:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
     iamRoleStatements:
@@ -101,6 +117,10 @@ functions:
           path: users/{id}
           method: GET
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
     environment:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
     iamRoleStatements:
@@ -124,7 +144,18 @@ custom:
       Outputs: ${file(./resources/cognito-outputs.yml)}
 resources:
   Resources:
-    myDynamoDBTable:
+    # API Gateway Cognito Authorizor
+    ApiGatewayAuthorizer: 
+      Type: AWS::ApiGateway::Authorizer
+      Properties: 
+        Name: CognitoUserPool
+        Type: COGNITO_USER_POOLS
+        IdentitySource: method.request.header.Authorization
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ProviderARNs:
+          - Fn::ImportValue: ${self:service}-cognito:${self:provider.stage}:CognitoArn
+    myDynamoDBTable: 
       Type: AWS::DynamoDB::Table
       Properties: 
         AttributeDefinitions: 
