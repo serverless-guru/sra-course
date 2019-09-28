@@ -19,8 +19,12 @@ api.handler = async event => {
         responseBody = await api.handleCreateUser(JSON.parse(event.body));
       } else if (event.httpMethod === 'GET') {
         // get user from DynamoDB
-        if (event.pathParameters.id) {
-          responseBody = await api.handleGetUserById(event.pathParameters.id);
+        if (event.pathParameters) {
+          if(event.pathParameters.id) {
+            responseBody = await api.handleGetUserById(event.pathParameters.id);
+          } else {
+            responseBody = await api.handleGetUsers();
+          }
         } else {
           responseBody = await api.handleGetUsers();
         }
@@ -36,6 +40,7 @@ api.handler = async event => {
     }
     return generic.success(responseBody);
   } catch (e) {
+    console.log('e', e);
     return generic.failure(e);
   }
 };

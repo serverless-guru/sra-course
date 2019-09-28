@@ -6,6 +6,7 @@ plugins:
   - serverless-pseudo-parameters
   - serverless-plugin-additional-stacks
   - serverless-iam-roles-per-function
+  - serverless-offline
 provider:
   name: aws
   runtime: nodejs10.x
@@ -15,6 +16,7 @@ provider:
   # ** Env vars (global) **
   environment:
     REGION: ${self:provider.region}
+    AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
   # ** X-Ray Tracing **
   tracing:
     apiGateway: true
@@ -132,6 +134,15 @@ custom:
   # ** Add global IAM permissions to all lambdas **
   serverless-iam-roles-per-function:
     defaultInherit: true
+  # ** Add global IAM permissions to all lambdas **
+  serverless-iam-roles-per-function:
+    defaultInherit: true
+  # ** SLS Offline plugin config **
+  serverless-offline:
+    port: 5050
+    noAuth: true
+    corsAllowOrigin: '*'
+    printOutput: true
   DynamoDBTableName: ${self:service}-users-table-${self:provider.stage} # sra-backend-users-table-test
   s3BucketName: ${self:service}-profile-images-${self:provider.stage}
   additionalStacks:
