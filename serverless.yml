@@ -177,3 +177,14 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:custom.DynamoDBTableName}
+  Outputs:
+    ApiURL:
+      Description: The API Gateway URL
+      Value:
+        Fn::Join:
+          - ""
+          - - https://
+            - Ref: ApiGatewayRestApi
+            - .execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}/
+      Export:
+        Name: ${self:service}-cognito:${self:provider.stage}:ApiURL
