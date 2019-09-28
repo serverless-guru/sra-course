@@ -23,6 +23,7 @@
     "serverless-pseudo-parameters": "^2.4.0"
   },
   "dependencies": {
+    "aws-xray-sdk": "^2.3.6",
     "uuid": "^3.3.2"
   }
 }
