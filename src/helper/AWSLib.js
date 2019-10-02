@@ -1,6 +1,6 @@
 // **** AWS X-RAY capture **** //
 const awsXRay = require('aws-xray-sdk');
-const AWS = awsXRay.captureAWSrequire("aws-sdk");
+const AWS = awsXRay.captureAWS(require("aws-sdk"));
 const REGION = process.env.REGION;
 AWS.config.update({region: REGION});
 

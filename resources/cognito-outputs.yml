@@ -12,3 +12,9 @@ CognitoArn:
       - Arn
   Export:
     Name: ${self:service}-cognito:${self:provider.stage}:CognitoArn
+CognitoClientId:
+  Description: The Cognito User Pool Client Id
+  Value:
+    Ref: UserPoolClient
+  Export:
+    Name: ${self:service}-cognito:${self:provider.stage}:CognitoClientId

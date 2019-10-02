@@ -36,7 +36,7 @@ api.handler = async event => {
         responseBody = await api.handleDeleteUserById(event.pathParameters.id);
       }
     } else {
-      throw {"err": `event.path of ${event.path} not supported`};
+      throw {"error": `event.path of ${event.path} not supported`};
     }
     return generic.success(responseBody);
   } catch (e) {
