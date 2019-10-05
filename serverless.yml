@@ -2,71 +2,101 @@ service: sra-backend
 # tenant: serverlessdev
 # app: sra-backend
 plugins:
-  # - '@serverless/enterprise-plugin'
   - serverless-pseudo-parameters
+  - serverless-plugin-additional-stacks
+  - serverless-iam-roles-per-function
 provider:
   name: aws
   runtime: nodejs10.x
   profile: ${opt:profile, "serverless-tutorial"}  # cat ~/.aws/credentials 
   region: ${opt:region, "us-west-2"}  # sls deploy --region us-east-2
   stage: ${opt:stage, "dev"} # sls deploy --stage test || qa, dev, prod
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - dynamodb:PutItem
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:DeleteItem
-        - dynamodb:UpdateItem
-      Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
+  environment:
+    S3_BUCKET: ${self:custom.s3BucketName}
+    TABLE_NAME: ${self:custom.DynamoDBTableName}
+    REGION: ${self:provider.region}
 functions:
   getAllUsers:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users
           method: GET
           cors: true
-    environment:
-      TABLE_NAME: ${self:custom.DynamoDBTableName}
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - dynamodb:Scan
+        Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
   updateUser:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users/{id}
           method: PUT
           cors: true
-    environment:
-      TABLE_NAME: ${self:custom.DynamoDBTableName}
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
+      - Effect: "Allow"
+        Action:
+          - s3:PutObject*
+        Resource: arn:aws:s3:::${self:custom.s3BucketName}/*
   createUser:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users
           method: POST
           cors: true
-    environment:
-      TABLE_NAME: ${self:custom.DynamoDBTableName}
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
+      - Effect: "Allow"
+        Action:
+          - s3:PutObject*
+        Resource: arn:aws:s3:::${self:custom.s3BucketName}/*
   deleteUser:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users/{id}
           method: DELETE
           cors: true
-    environment:
-      TABLE_NAME: ${self:custom.DynamoDBTableName}
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
   getUser:
-    handler: api.handler
+    handler: src/handlers/api.handler
     events:
       - http:
           path: users/{id}
           method: GET
           cors: true
-    environment:
-      TABLE_NAME: ${self:custom.DynamoDBTableName}
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
 custom:
   DynamoDBTableName: ${self:service}-users-table-${self:provider.stage} # sra-backend-users-table-test
+  s3BucketName: ${self:service}-profile-images-${self:provider.stage}
+  # ** additional stacks plugin **
+  additionalStacks:
+    s3:
+      Deploy: Before
+      Resources:
+        S3ProfileImages:
+          Type: AWS::S3::Bucket
+          Properties:
+            BucketName: ${self:custom.s3BucketName}
 resources:
   Resources:
     myDynamoDBTable: 
