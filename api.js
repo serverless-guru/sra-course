@@ -5,8 +5,10 @@ const api = {};
 
 const TABLE_NAME = process.env.TABLE_NAME;
 
+let documentClient = new AWS.DynamoDB.DocumentClient();
+
 api.handler = async (event) => {
-  console.log('event', event);
+  console.log('** event', event);
   console.log('TABLE_NAME', TABLE_NAME);
   let response = {};
   
@@ -14,6 +16,7 @@ api.handler = async (event) => {
     if (event.path.includes('users')) {
         if (event.httpMethod === 'POST') {
             // save user in DynamoDB
+            console.log(JSON.parse(event.body))
             response.body = JSON.stringify(await api.handleCreateUser(JSON.parse(event.body)));
         } else if (event.httpMethod === 'GET') {
             // get user from DynamoDB
@@ -35,6 +38,7 @@ api.handler = async (event) => {
     }
     response.statusCode = 200;
   } catch (e) {
+      console.log('***ERROR***', e)
       response.body = JSON.stringify(e);
       response.statusCode = 500;
   }
@@ -48,8 +52,6 @@ api.handler = async (event) => {
 
 api.handleDeleteUserById = (userId) => {
     return new Promise((resolve, reject) => {
-        let documentClient = new AWS.DynamoDB.DocumentClient();
-    
         let params = {
           TableName : TABLE_NAME,
           Key: {
@@ -59,15 +61,13 @@ api.handleDeleteUserById = (userId) => {
         
         documentClient.delete(params, (err, data) => {
           if (err) reject(err);
-          else resolve(data);
+          else resolve({ message: `user: ${userId} has been deleted`});
         }); 
     });
 };
 
 api.handleCreateUser = (item) => {
     return new Promise((resolve, reject) => {
-        let documentClient = new AWS.DynamoDB.DocumentClient();
-
         item.user_id = uuidv4();
     
         let params = {
@@ -77,15 +77,13 @@ api.handleCreateUser = (item) => {
         
         documentClient.put(params, (err, data) => {
           if (err) reject(err);
-          else resolve(data);
+          else resolve({ message: "user has been created", item });
         }); 
     });
 };
 
 api.handleUpdateUserById = (userId, item) => {
     return new Promise((resolve, reject) => {
-        let documentClient = new AWS.DynamoDB.DocumentClient();
-        
         let params = {
           TableName : TABLE_NAME,
           Key: {
@@ -105,30 +103,26 @@ api.handleUpdateUserById = (userId, item) => {
 
         documentClient.update(params, (err, data) => {
           if (err) reject(err);
-          else resolve(data);
+          else resolve({ data, message: `user ${userId} has been updated` });
         });
     });
 };
 
 api.handleGetUsers = () => {
-    return new Promise((resolve, reject) => {
-        let documentClient = new AWS.DynamoDB.DocumentClient();
-        
+    return new Promise((resolve, reject) => {        
         let params = {
           TableName : TABLE_NAME
         };
         
         documentClient.scan(params, (err, data) => {
            if (err) reject(err);
-           else resolve(data);
+           else resolve({ data, message: "all users have been fetched" });
         });
     });
 };
 
 api.handleGetUserById = (userId) => {
     return new Promise((resolve, reject) => {
-        let documentClient = new AWS.DynamoDB.DocumentClient();
-        
         let params = {
           TableName : TABLE_NAME,
           Key: {
@@ -138,7 +132,7 @@ api.handleGetUserById = (userId) => {
         
         documentClient.get(params, (err, data) => {
           if (err) reject(err);
-          else resolve(data);
+          else resolve({ data, message: `user: ${userId} has been fetched` });
         });
     });
 };

@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@serverless/enterprise-plugin": "^1.1.0",
+    "aws-sdk": "^2.924.0",
+    "serverless-offline": "^7.0.0",
     "serverless-pseudo-parameters": "^2.4.0"
   },
   "dependencies": {

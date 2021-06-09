@@ -1,24 +1,26 @@
 service: sra-backend
-# tenant: serverlessdev
-# app: sra-backend
 plugins:
-  # - '@serverless/enterprise-plugin'
   - serverless-pseudo-parameters
+  - serverless-offline
 provider:
   name: aws
-  runtime: nodejs10.x
-  profile: ${opt:profile, "serverless-tutorial"}  # cat ~/.aws/credentials 
+  runtime: nodejs12.x
   region: ${opt:region, "us-west-2"}  # sls deploy --region us-east-2
   stage: ${opt:stage, "dev"} # sls deploy --stage test || qa, dev, prod
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - dynamodb:PutItem
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:DeleteItem
-        - dynamodb:UpdateItem
-      Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
+  lambdaHashingVersion: "20201221"
+  environment:
+    stage: ${self:provider.stage}
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:DeleteItem
+            - dynamodb:UpdateItem
+          Resource: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.DynamoDBTableName}
 functions:
   getAllUsers:
     handler: api.handler
@@ -67,9 +69,10 @@ functions:
       TABLE_NAME: ${self:custom.DynamoDBTableName}
 custom:
   DynamoDBTableName: ${self:service}-users-table-${self:provider.stage} # sra-backend-users-table-test
+
 resources:
   Resources:
-    myDynamoDBTable: 
+    usersTable: 
       Type: AWS::DynamoDB::Table
       Properties: 
         AttributeDefinitions: 
@@ -77,6 +80,6 @@ resources:
             AttributeType: S
         KeySchema: 
           - AttributeName: user_id
-            KeyType: HASH  # RANGE
+            KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:custom.DynamoDBTableName}
