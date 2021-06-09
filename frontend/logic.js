@@ -5,6 +5,8 @@ document.addEventListener('click', function (event) {
     if(event.target.matches('#getUsers')) fetchUsers()
     else if (event.target.matches('#createUser')) createUser()
     else if (event.target.matches('.deleteBtn')) deleteUser(event.target.name)
+    else if (event.target.matches('.updateConfirmBtn')) updateUser(event.target.name)
+    else if (event.target.matches('.showUpdateFormBtn')) showUpdateUserForm(event.target.name)
 }, false);
 
 function fetchUsers () {
@@ -18,7 +20,7 @@ function fetchUsers () {
         console.log(jsonResponse.data.Items)
         if(jsonResponse.data.Count > 0) {
             jsonResponse.data.Items.forEach(item => {
-                showUsersHTML += `<h2>${item.name}</h2><p>${item.name} works as a ${item.job}.</p><button class="deleteBtn" name="${item.user_id}">Delete</button>`;
+                showUsersHTML += `<div id="user${item.user_id}"><h2>${item.name}</h2><p>${item.name} works as a ${item.job}.</p><button class="deleteBtn" name="${item.user_id}">Delete</button><button class="showUpdateFormBtn" name="${item.user_id}">Update</button></div>`;
             });
         } else {
             showUsersHTML = "no users found in database"
@@ -55,4 +57,32 @@ function deleteUser (userId) {
     })
     .then(res => fetchUsers())
     .catch(async res => console.log(await res.json()))
+}
+
+function updateUser (userId) {
+    fetch(`${url}/${userId}`, {
+        method: "PUT",
+        body: JSON.stringify({
+            name: document.getElementById("nameUpdateInput").value,
+            job: document.getElementById("jobUpdateInput").value
+        })
+    })
+    .then(res => fetchUsers())
+    .catch(async res => console.log(await res.json()))
+}
+
+function getUser (userId) {
+    return new Promise(resolve => {
+        fetch(`${url}/${userId}`, {
+            method: "GET"
+        })
+        .then(async res => resolve(await res.json()))
+        .catch(async res => console.log(await res.json()))
+    })
+}
+
+async function showUpdateUserForm (userId) {
+    let userData = await getUser(userId)
+    console.log(userData)
+    document.getElementById(`user${userId}`).innerHTML += `Name<input type="text" id="nameUpdateInput" value="${userData.data.Item.name}"> Job<input type="text" id="jobUpdateInput" value="${userData.data.Item.job}"><button class="updateConfirmBtn" name="${userId}">Confirm</button>`;
 }
