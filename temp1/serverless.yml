@@ -1,0 +1,39 @@
+service: temp1
+frameworkVersion: '2'
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  stage: dev # prod, test, qa
+  region: us-east-2
+plugins:
+  - serverless-offline
+functions:
+  getUser:
+    handler: index.handler
+    events:
+      - http:
+          path: users
+          method: GET
+          cors: true
+  createUser:
+    handler: index.handler
+    events:
+      - http:
+          path: users
+          method: POST
+          cors: true
+  deleteUser:
+    handler: index.handler
+    events:
+      - http:
+          path: users
+          method: DELETE
+          cors: true
+  updateUser:
+    handler: index.handler
+    events:
+      - http:
+          path: users
+          method: PUT
+          cors: true

@@ -1,0 +1,22 @@
+{
+  "name": "sra-course",
+  "version": "1.0.0",
+  "description": "1. Review of slides",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serverless-guru/sra-course.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/serverless-guru/sra-course/issues"
+  },
+  "homepage": "https://github.com/serverless-guru/sra-course#readme",
+  "devDependencies": {
+    "serverless-offline": "^7.0.0"
+  }
+}

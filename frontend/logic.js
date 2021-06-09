@@ -1,4 +1,4 @@
-let url = "https://q39q2b06b0.execute-api.us-west-2.amazonaws.com/dev/users";
+let url = "https://k0km2xgfef.execute-api.us-east-2.amazonaws.com/prod/users";
 
 document.addEventListener('click', function (event) {
 	event.preventDefault();
