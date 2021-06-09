@@ -7,7 +7,7 @@ const TABLE_NAME = process.env.TABLE_NAME;
 
 let documentClient = new AWS.DynamoDB.DocumentClient();
 
-api.handler = async (event) => {
+api.handler = async (event) => { 
   console.log('** event', event);
   console.log('TABLE_NAME', TABLE_NAME);
   let response = {};
